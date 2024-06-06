@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
+    <title>个人网站</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: #ffde59;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            background-color: #333;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #f8f8f2;
+            color: black;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .photo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .photo-grid div {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex: 1 1 calc(33.333% - 40px); /* 33.333% width with gap */
+            margin: 10px;
+        }
+
+        .photo-grid img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .photo-grid img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #333;
+            color: white;
+            position: relative;
+        }
+
+        @media screen and (max-width: 800px) {
+            .navbar, .content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .photo-grid div {
+                flex: 1 1 calc(50% - 40px); /* 50% width with gap for smaller screens */
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            .photo-grid div {
+                flex: 1 1 calc(100% - 40px); /* 100% width with gap for very small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h3>我的网站</h3>
+        <p><b>欢迎来到我的个人网站</b>!</p>
+    </div>
+    <div class="navbar">
+        <a href="index.html">首页</a>
+        <a href="about.html">关于我</a>
+        <a href="potoshare.html">照片分享</a>
+        <a href="video.html">最新视频</a>
+        <a href="article1.html">最新文章</a>
+        <a href="liuyan.html">留言</a>
+    </div>
+    <div id="app" class="content">
+        <h4>按时间过滤照片</h4>
+        <div class="fakeimg">
+            <form @submit.prevent="filterPhotos">
+                <label for="date">选择日期:</label><br>
+                <input type="date" id="date" v-model="selectedDate"><br>
+                <input type="submit" value="过滤">
+            </form>
+        </div>
+        <div class="photo-grid" id="photos">
+            <div v-for="photo in filteredPhotos" :key="photo.src">
+                <img :src="photo.src" :alt="photo.alt">
+                <p>{{ photo.caption }}</p>
+                <p>{{ new Date(photo.date).toLocaleDateString() }}</p>
+            </div>
+        </div>
+       
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        selectedDate: '',
+                        photos: [
+                            { src: 'images/鬼迷日眼的我们.jpg', alt: '鬼迷日眼的我们', caption: '鬼迷日眼的我们', date: '2024-05-01' },
+                            { src: 'images/晚间灯光.jpg', alt: '晚间灯光', caption: '结束一天的学习，感觉又累又轻松！', date: '2024-05-02' },
+                            { src: 'images/小熊上树.jpg', alt: '小熊上树', caption: 'd=====(￣▽￣*)捕捉到一只小熊！', date: '2024-05-03' },
+                            { src: 'images/日落.jpg', alt: '日落', caption: '暖暖的一天', date: '2024-05-04' },
+                            { src: 'images/小渔村.jpg', alt: '小渔村', caption: '小渔村！夏天到了！', date: '2024-05-05' },
+                            { src: 'images/小车.jpg', alt: '小车', caption: 'ROS智能车比赛现场', date: '2024-05-06' },
+                            { src: 'images/猴子.jpg', alt: '猴子', caption: '庐山的猴子真活泼！', date: '2024-05-07' },
+                            { src: 'images/天空.jpg', alt: '天空', caption: '蓝蓝的天空', date: '2024-05-08' },
+                            { src: 'images/日出1.jpg', alt: '日出', caption: '太阳照得心里暖暖的', date: '2024-05-09' },
+                            { src: 'images/烤肉.jpg', alt: '烤肉', caption: '和好朋友去吃烤肉。', date: '2024-05-10' },
+                            { src: 'images/烤鱼.jpg', alt: '烤鱼', caption: '烤鱼真好吃', date: '2024-05-11' },
+                            { src: 'images/网页图片1.jpg', alt: '', caption: '极光', date: '2024-05-11' },
+                            { src: 'images/战战3.jpg', alt: '', caption: '战战', date: '2024-05-12' },
+                            { src: 'images/一博头盔.jpg', alt: '', caption: '啵啵', date: '2024-05-12' },
+                            { src: 'images/双人1.jpg', alt: '', caption: '博君一肖是真的', date: '2024-05-12' },
+                            { src: 'images/双人2.jpg', alt: '', caption: '是真的', date: '2024-05-12' },
+                            { src: 'images/战战1.jpg', alt: '', caption: '好帅', date: '2024-05-13' }
+                        ]
+                    };
+                },
+                computed: {
+                    filteredPhotos() {
+                        if (!this.selectedDate) {
+                            return this.photos;
+                        }
+                        return this.photos.filter(photo => photo.date === this.selectedDate);
+                    }
+                },
+                methods: {
+                    filterPhotos() {
+                        // This method is intentionally left blank
+                    }
+                }
+            });
+
+            app.mount('#app');
+        });
+    </script>
+</body>
+</html>
